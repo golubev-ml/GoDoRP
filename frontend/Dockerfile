@@ -11,12 +11,11 @@ RUN mkdir -p /frontend
 WORKDIR /frontend
 COPY ./ ./
 
-RUN npm install
+RUN npm install && npm install -g http-server
 
 # if dev settings will use create-react start script for hot code relaoding via docker-compose shared volume
 # if production setting will build optimized static files and serve using http-server
 CMD if test "${NODE_ENV}" = "production" ; then \
-	npm install -g http-server && \
 	npm run build && \
 	cd build && \
 	hs -p 3000; \
