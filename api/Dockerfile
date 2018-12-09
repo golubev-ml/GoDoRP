@@ -6,21 +6,18 @@ FROM golang
 ARG app_env
 ENV APP_ENV $app_env
 
-# it is okay to leave user/GoDoRP as long as you do not want to share code with other libraries
-COPY . /go/src/github.com/user/GoDoRP/api
-WORKDIR /go/src/github.com/user/GoDoRP/api
+# 
+COPY ./src /go/src
+WORKDIR /go/src/api
 
-# added vendor services will need to be included here
-RUN go get ./vendor/database
-
-RUN go get ./
-RUN go build
+# after this /go/bin/api binary will apear
+RUN go install
 
 # if dev setting will use pilu/fresh for code reloading via docker-compose volume sharing with local machine
 # if production setting will build binary
 CMD if [ ${APP_ENV} = production ]; \
 	then \
-	api; \
+	/go/bin/api; \
 	else \
 	go get github.com/pilu/fresh && \
 	fresh; \

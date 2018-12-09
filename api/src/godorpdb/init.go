@@ -1,14 +1,18 @@
-package database
+package godorpdb
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"time"
+
+	"github.com/jinzhu/gorm"
+	// importing for postgres driver
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+// DB is database pointer to postgres orm.
 var DB *gorm.DB
 var err error
 
+// Post structure for posts table.
 type Post struct {
 	gorm.Model
 	Author  string
@@ -29,7 +33,8 @@ func addDatabase(dbname string) error {
 	return nil
 }
 
-func Init() (*gorm.DB, error) {
+// InitDb function to init postgres database.
+func InitDb() (*gorm.DB, error) {
 	// set up DB connection and then attempt to connect 5 times over 25 seconds
 	connectionParams := "user=docker password=docker sslmode=disable host=db"
 	for i := 0; i < 5; i++ {

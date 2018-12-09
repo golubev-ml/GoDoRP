@@ -1,26 +1,27 @@
 package main
 
 import (
-	"database"
 	"encoding/json"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
+	"godorpdb"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 // CRUD Route Handlers
 func createPostHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	setCors(w)
 	decoder := json.NewDecoder(r.Body)
-	var newPost database.Post
+	var newPost godorpdb.Post
 	if err := decoder.Decode(&newPost); err != nil {
 		http.Error(w, err.Error(), 400)
 		return
 	}
 
-	database.DB.Create(&newPost)
+	godorpdb.DB.Create(&newPost)
 	res, err := json.Marshal(newPost)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -32,8 +33,8 @@ func createPostHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Para
 
 func deletePostHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	setCors(w)
-	var deletedPost database.Post
-	database.DB.Where("ID = ?", ps.ByName("postId")).Delete(&deletedPost) // write now this returns a blank item not the deleted item
+	var deletedPost godorpdb.Post
+	godorpdb.DB.Where("ID = ?", ps.ByName("postId")).Delete(&deletedPost) // write now this returns a blank item not the deleted item
 	res, err := json.Marshal(deletedPost)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -54,11 +55,11 @@ func updatePostHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 		http.Error(w, err.Error(), 400)
 	}
 
-	var updatedPost database.Post
-	database.DB.Where("ID = ?", ps.ByName("postId")).First(&updatedPost)
+	var updatedPost godorpdb.Post
+	godorpdb.DB.Where("ID = ?", ps.ByName("postId")).First(&updatedPost)
 	updatedPost.Author = updates.Author
 	updatedPost.Message = updates.Message
-	database.DB.Save(&updatedPost)
+	godorpdb.DB.Save(&updatedPost)
 	res, err := json.Marshal(updatedPost)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -69,8 +70,8 @@ func updatePostHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 
 func showPostHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	setCors(w)
-	var post database.Post
-	database.DB.Where("ID = ?", ps.ByName("postId")).First(&post)
+	var post godorpdb.Post
+	godorpdb.DB.Where("ID = ?", ps.ByName("postId")).First(&post)
 	res, err := json.Marshal(post)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -82,8 +83,8 @@ func showPostHandler(w http.ResponseWriter, r *http.Request, ps httprouter.Param
 
 func indexPostHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	setCors(w)
-	var posts []database.Post
-	database.DB.Find(&posts)
+	var posts []godorpdb.Post
+	godorpdb.DB.Find(&posts)
 	res, err := json.Marshal(posts)
 	if err != nil {
 		http.Error(w, err.Error(), 500)
@@ -104,28 +105,27 @@ func corsHandler(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 }
 
 // util
-func getFrontendUrl() string {
+func getFrontendURL() string {
 	if os.Getenv("APP_ENV") == "production" {
 		return "http://localhost:3000" // change this to production domain
-	} else {
-		return "http://localhost:3000"
 	}
+	return "http://localhost:3000"
 }
 
 func setCors(w http.ResponseWriter) {
-	frontendUrl := getFrontendUrl()
-	w.Header().Set("Access-Control-Allow-Origin", frontendUrl)
+	frontendURL := getFrontendURL()
+	w.Header().Set("Access-Control-Allow-Origin", frontendURL)
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS, POST, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
 
-// Temporary Canary test to make sure Travis-CI is working
+//Canary test to make sure Travis-CI is working.
 func Canary(word string) string {
 	return word
 }
 
 func main() {
-	defer database.DB.Close()
+	defer godorpdb.DB.Close()
 
 	// add router and routes
 	router := httprouter.New()
@@ -138,7 +138,7 @@ func main() {
 	router.OPTIONS("/*any", corsHandler)
 
 	// add database
-	_, err := database.Init()
+	_, err := godorpdb.InitDb()
 	if err != nil {
 		log.Println("connection to DB failed, aborting...")
 		log.Fatal(err)

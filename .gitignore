@@ -9,7 +9,8 @@ db/pgdata
 
 # production
 frontend/build
-api/tmp
+api/src/api/tmp
+api/bin
 
 # misc
 npm-debug.log*

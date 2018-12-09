@@ -2,6 +2,7 @@ version: '2'
 services:
   db:
     build: ./db
+    container_name: godorp_db
     volumes:
       - ./db/pgdata:/pgdata
     ports:
@@ -16,8 +17,9 @@ services:
       context: ./api
       args:
         app_env: ${APP_ENV}
+    container_name: godorp_api
     volumes:
-      - ./api:/go/src/github.com/user/GoDoRP/api
+      - ./api:/go/src/api
     ports:
       - "5000:8080"
     links:
@@ -28,6 +30,7 @@ services:
       context: ./frontend
       args:
         app_env: ${APP_ENV}
+    container_name: godorp_frontend
     volumes:
       - ./frontend/src:/frontend/src 
     ports:
