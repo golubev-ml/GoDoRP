@@ -19,7 +19,7 @@ services:
         app_env: ${APP_ENV}
     container_name: godorp_api
     volumes:
-      - ./api:/go/src/api
+      - ./api/src/api:/go/src/api
     ports:
       - "5000:8080"
     links:

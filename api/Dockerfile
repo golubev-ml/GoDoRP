@@ -10,16 +10,21 @@ ENV APP_ENV $app_env
 COPY ./src /go/src
 WORKDIR /go/src/api
 
+# install libraries
+RUN go get github.com/jinzhu/gorm
+RUN go get github.com/julienschmidt/httprouter
+RUN go get github.com/lib/pq
+RUN go get github.com/lib/pq/hstore
+RUN go get github.com/pilu/fresh
+
 # after this /go/bin/api binary will apear
 RUN go install
 
 # if dev setting will use pilu/fresh for code reloading via docker-compose volume sharing with local machine
 # if production setting will build binary
-CMD if [ ${APP_ENV} = production ]; \
-	then \
+CMD if test "${NODE_ENV}" = "production" ; then \
 	/go/bin/api; \
 	else \
-	go get github.com/pilu/fresh && \
 	fresh; \
 	fi
 	

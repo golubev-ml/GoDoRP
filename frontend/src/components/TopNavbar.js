@@ -6,7 +6,7 @@ function TopNavbar() {
     <Navbar inverse fixedTop>
       <Navbar.Header>
         <Navbar.Brand>
-          <a href="/">GoDoRP</a>
+          <a href="/">HOME</a>
         </Navbar.Brand>
         <Navbar.Toggle />
       </Navbar.Header>
