@@ -1,11 +1,11 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-import { Panel } from 'react-bootstrap/lib';
-import Style from '../util/Style.js';
-import Urls from '../util/Urls.js';
-import PostBoard from './PostBoard.js';
-import CreatePostButton from './CreatePostButton.js';
-import TopNavbar from './TopNavbar.js';
+import React, { Component } from "react";
+import axios from "axios";
+import { Panel } from "react-bootstrap/lib";
+import Style from "../util/Style.js";
+import Urls from "../util/Urls.js";
+import PostBoard from "./PostBoard.js";
+import CreatePostButton from "./CreatePostButton.js";
+import TopNavbar from "./TopNavbar.js";
 
 class App extends Component {
   constructor(props) {
@@ -13,7 +13,7 @@ class App extends Component {
     this.state = {
       windowWidth: window.innerWidth,
       posts: [],
-      errors: [],
+      errors: []
     };
   }
 
@@ -22,15 +22,14 @@ class App extends Component {
   }
 
   getPosts() {
-    axios.get(`${Urls.api}/posts`)
-      .then((res) => {
+    axios
+      .get(`${Urls.api}/posts`)
+      .then(res => {
         this.setState({ posts: res.data });
-      },
-    )
+      })
       .catch(() => {
-        this.setState({ errors: ['Backend API connection error'] });
-      },
-    );
+        this.setState({ errors: ["Backend API connection error"] });
+      });
   }
 
   // only removes from frontend not DB
@@ -51,26 +50,26 @@ class App extends Component {
     const { windowWidth, posts } = this.state;
     let width;
     if (windowWidth < Style.xsCutoff) {
-      width = '100%';
+      width = "100%";
     } else if (windowWidth < Style.smCutoff) {
-      width = '723px';
+      width = "723px";
     } else if (windowWidth < Style.mdCutoff) {
-      width = '933px';
+      width = "933px";
     } else {
-      width = '1127px';
+      width = "1127px";
     }
 
     const panelStyle = {
       width,
-      margin: 'auto',
-      marginTop: '65px',
+      margin: "auto",
+      marginTop: "65px"
     };
 
     return (
       <div>
         <TopNavbar />
         <Panel style={panelStyle} bsStyle="primary">
-          <h2>Welcome to Your GoDoRP App</h2>
+          <h2>Welcome to Posts table view</h2>
           <CreatePostButton addPost={this.addPost.bind(this)} />
           <PostBoard posts={posts} removePost={this.removePost.bind(this)} />
         </Panel>
